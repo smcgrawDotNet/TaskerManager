@@ -1,0 +1,252 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<dataController name="Tasks" conflictDetection="overwriteChanges" label="Tasks" xmlns="urn:schemas-codeontime-com:data-aquarium">
+  <commands>
+    <command id="command1" type="Text">
+      <text><![CDATA[
+select
+	"Tasks"."TaskID" "TaskID"
+	,"Tasks"."Description" "Description"
+	,"Tasks"."Date" "Date"
+	,"Tasks"."Created" "Created"
+	,"Tasks"."Completed" "Completed"
+	,"Tasks"."CategoryID" "CategoryID"
+	,"Location"."State" "State"
+	,"Location"."PostalCode" "PostalCode"
+	,"Location"."Country" "Country"
+	,"Location"."Address" "Address"
+	,"Location"."Name" "LocationName"
+	,"Location"."City" "City"
+	,"Tasks"."LocationID" "LocationID"
+	,"Tasks"."Creator" "Creator"
+	,"Tasks"."Owner" "Owner"
+	,"Tasks"."Status" "Status"
+from "dbo"."Tasks" "Tasks"
+	left join "dbo"."Locations" "Location" on "Tasks"."LocationID" = "Location"."LocationID"
+order by "Tasks"."Date" desc]]></text>
+    </command>
+    <command id="TaskIDIdentityCommand" type="Text" event="Inserted">
+      <text><![CDATA[select @@identity]]></text>
+      <output>
+        <fieldOutput fieldName="TaskID" />
+      </output>
+    </command>
+  </commands>
+  <fields>
+    <field name="TaskID" type="Int32" allowNulls="false" isPrimaryKey="true" label="Task ID" readOnly="true" />
+    <field name="Description" type="String" allowNulls="false" label="Description" length="50" showInSummary="true" />
+    <field name="Date" type="DateTime" allowNulls="false" dataFormatString="g" label="Date" showInSummary="true" />
+    <field name="Created" type="DateTime" allowNulls="false" dataFormatString="g" label="Created" showInSummary="true" />
+    <field name="Completed" type="DateTime" dataFormatString="g" label="Completed" showInSummary="true" />
+    <field name="CategoryID" type="Int32" label="Category ID" showInSummary="true" />
+    <field name="State" type="String" readOnly="true" label="State" length="10" />
+    <field name="PostalCode" type="String" readOnly="true" label="Postal Code" length="10" />
+    <field name="Country" type="String" readOnly="true" label="Country" length="10" />
+    <field name="Address" type="String" readOnly="true" label="Address" length="25" />
+    <field name="LocationName" type="String" readOnly="true" label="Location Name" length="25" />
+    <field name="City" type="String" readOnly="true" label="City" length="25" />
+    <field name="LocationID" type="Int32" label="Location ID">
+      <items style="Lookup" dataController="Locations" newDataView="createForm1" dataValueField="LocationID" dataTextField="Name" copy="State=State, PostalCode=PostalCode, Country=Country, Address=Address, City=City" />
+    </field>
+    <field name="Creator" type="String" label="Creator" length="50">
+      <items style="UserNameLookup" />
+    </field>
+    <field name="Owner" type="String" label="Owner" length="50">
+      <items style="UserNameLookup" />
+    </field>
+    <field name="Status" type="String" label="Status" length="10">
+      <items style="DropDownList">
+        <item value="New" text="New" />
+        <item value="Delegated" text="Delegated" />
+        <item value="In-Progress" text="In-Progress" />
+        <item value="Canceled" text="Canceled" />
+        <item value="Completed" text="Completed" />
+      </items>
+    </field>
+    <field name="Atachments" type="DataView" label="Atachments">
+      <dataView controller="Atachments" view="grid1" filterFields="TaskID" />
+    </field>
+    <field name="Expenses" type="DataView" label="Expenses">
+      <dataView controller="Expenses" view="grid1" filterFields="TaskID" />
+    </field>
+    <field name="Tags" type="String" label="Tags">
+      <items style="DropDownList" dataController="Tags" newDataView="createForm1" targetController="TaskTags" />
+    </field>
+  </fields>
+  <views>
+    <view id="grid1" type="Grid" commandId="command1" label="Tasks" sortExpression="Date desc" filter="Completed is null AND (Owner = @BusinessRules_UserName OR Creator = @BusinessRules_UserName)">
+      <headerText>$DefaultGridViewDescription</headerText>
+      <dataFields>
+        <dataField fieldName="Description" columns="50" />
+        <dataField fieldName="Date" columns="20" />
+        <dataField fieldName="Status" columns="10" />
+        <dataField fieldName="Created" columns="20" />
+        <dataField fieldName="Completed" columns="20" />
+        <dataField fieldName="CategoryID" columns="15" />
+        <dataField fieldName="Tags" rows="5" />
+        <dataField fieldName="LocationID" aliasFieldName="LocationName" />
+        <dataField fieldName="Creator" columns="50" />
+        <dataField fieldName="Owner" columns="50" />
+        <dataField fieldName="Atachments" columns="15" />
+        <dataField fieldName="Expenses" columns="15" />
+      </dataFields>
+    </view>
+    <view id="editForm1" type="Form" commandId="command1" label="Review Tasks" tags="material-icon-event">
+      <headerText>$DefaultEditViewDescription</headerText>
+      <categories>
+        <category id="c1" headerText="Tasks" flow="NewColumn">
+          <description><![CDATA[$DefaultEditDescription]]></description>
+          <dataFields>
+            <dataField fieldName="Description" columns="50" />
+            <dataField fieldName="Date" columns="20" />
+            <dataField fieldName="Status" columns="10" />
+            <dataField fieldName="Created" columns="20" />
+            <dataField fieldName="Completed" columns="20" textMode="Static" />
+            <dataField fieldName="CategoryID" columns="15" />
+            <dataField fieldName="State" columns="10" />
+            <dataField fieldName="PostalCode" columns="10" />
+            <dataField fieldName="Country" columns="10" />
+            <dataField fieldName="Address" columns="25" />
+            <dataField fieldName="City" columns="25" />
+            <dataField fieldName="LocationID" aliasFieldName="LocationName" />
+            <dataField fieldName="Creator" columns="50" />
+            <dataField fieldName="Owner" columns="50" />
+            <dataField fieldName="Atachments" columns="15" />
+            <dataField fieldName="Expenses" columns="15" />
+            <dataField fieldName="Tags" rows="5" />
+          </dataFields>
+        </category>
+      </categories>
+    </view>
+    <view id="createForm1" type="Form" commandId="command1" label="New Tasks" tags="material-icon-event">
+      <headerText>$DefaultCreateViewDescription</headerText>
+      <categories>
+        <category id="c1" flow="NewColumn">
+          <description><![CDATA[$DefaultNewDescription]]></description>
+          <dataFields>
+            <dataField fieldName="Description" columns="50" />
+            <dataField fieldName="Date" columns="20" />
+            <dataField fieldName="Created" columns="20" hidden="true" textMode="Static" />
+            <dataField fieldName="Status" columns="10" hidden="true" />
+            <dataField fieldName="CategoryID" columns="15" />
+            <dataField fieldName="State" columns="10" />
+            <dataField fieldName="PostalCode" columns="10" />
+            <dataField fieldName="Country" columns="10" />
+            <dataField fieldName="Address" columns="25" />
+            <dataField fieldName="City" columns="25" />
+            <dataField fieldName="LocationID" aliasFieldName="LocationName" />
+            <dataField fieldName="Creator" columns="50" />
+            <dataField fieldName="Owner" columns="50" />
+            <dataField fieldName="Atachments" columns="15" />
+            <dataField fieldName="Expenses" columns="15" />
+            <dataField fieldName="Tags" rows="5" />
+          </dataFields>
+        </category>
+      </categories>
+    </view>
+    <view id="gridAllTasks" type="Grid" commandId="command1" label="All Tasks" sortExpression="Date desc" filter="Completed is null AND (Owner = @BusinessRules_UserName OR Creator = @BusinessRules_UserName)">
+      <headerText>$DefaultGridViewDescription</headerText>
+      <dataFields>
+        <dataField fieldName="Description" columns="50" />
+        <dataField fieldName="Date" columns="20" />
+        <dataField fieldName="Status" columns="10" />
+        <dataField fieldName="Created" columns="20" />
+        <dataField fieldName="Completed" columns="20" />
+        <dataField fieldName="CategoryID" columns="15" />
+        <dataField fieldName="Tags" rows="5" />
+        <dataField fieldName="LocationID" aliasFieldName="LocationName" />
+        <dataField fieldName="Creator" columns="50" />
+        <dataField fieldName="Owner" columns="50" />
+        <dataField fieldName="Atachments" columns="15" />
+        <dataField fieldName="Expenses" columns="15" />
+      </dataFields>
+    </view>
+  </views>
+  <actions>
+    <actionGroup id="ag1" scope="Grid">
+      <action id="a1" commandName="Select" commandArgument="editForm1" />
+      <action id="a2" commandName="Edit" />
+      <action id="a3" commandName="Delete" />
+      <action id="a6" />
+      <action id="a7" commandName="New" commandArgument="grid1" />
+      <action id="a8" commandName="Duplicate" commandArgument="createForm1" />
+      <action commandName="Custom" commandArgument="CompleteTask" headerText="Complete" cssClass="material-icon-assignment-turned-in" whenClientScript="$row.Completed == null" id="a100" />
+    </actionGroup>
+    <actionGroup id="ag2" scope="Form">
+      <action id="a1" commandName="Edit" />
+      <action id="a2" commandName="Delete" />
+      <action id="a3" commandName="Cancel" />
+      <action id="a4" whenLastCommandName="Edit" commandName="Update" commandArgument="Save" />
+      <action id="a5" whenLastCommandName="Edit" commandName="Cancel" />
+      <action id="a6" whenLastCommandName="New" commandName="Insert" commandArgument="Save" />
+      <action id="a7" whenLastCommandName="New" commandName="Insert" commandArgument="SaveAndNew" />
+      <action id="a8" whenLastCommandName="New" commandName="Cancel" />
+      <action id="a9" whenLastCommandName="Duplicate" commandName="Insert" />
+      <action id="a10" whenLastCommandName="Duplicate" commandName="Cancel" />
+      <action id="a13" whenLastCommandName="Insert" whenLastCommandArgument="Save" whenView="createForm1" commandName="Select" commandArgument="editForm1" whenClientScript="this.hasDetails()" />
+      <action id="a14" whenLastCommandName="Insert" whenLastCommandArgument="SaveAndNew" commandName="New" commandArgument="createForm1" />
+      <action commandName="Custom" commandArgument="CompleteTask" headerText="Complete" cssClass="material-icon-assignment-turned-in" whenClientScript="$row.Completed == null" id="a100" />
+    </actionGroup>
+    <actionGroup id="ag3" scope="ActionBar" headerText="New" flat="true">
+      <action id="a1" commandName="New" commandArgument="createForm1" cssClass="NewIcon" />
+    </actionGroup>
+    <actionGroup id="ag4" scope="ActionBar" headerText="Edit/Delete" flat="true">
+      <action id="a1" whenKeySelected="true" commandName="Edit" commandArgument="editForm1" cssClass="EditIcon" whenView="grid1" />
+      <action id="a2" whenKeySelected="true" commandName="Delete" cssClass="DeleteIcon" whenView="grid1" />
+    </actionGroup>
+    <actionGroup id="ag5" scope="ActionBar" headerText="Actions">
+      <action id="a1" commandName="ExportCsv" />
+      <action id="a2" />
+      <action id="a3" commandName="ExportRowset" />
+      <action id="a4" commandName="ExportRss" />
+      <action id="a5" />
+      <action id="a6" commandName="Import" commandArgument="createForm1" />
+      <action id="a7" commandName="DataSheet" />
+      <action id="a8" commandName="Grid" />
+    </actionGroup>
+    <actionGroup id="ag6" scope="ActionBar" headerText="Record">
+      <action id="a1" whenLastCommandName="Edit" commandName="Update" />
+      <action id="a2" whenLastCommandName="Edit" commandName="Cancel" />
+      <action id="a3" whenLastCommandName="New" commandName="Insert" />
+      <action id="a4" whenLastCommandName="New" commandName="Cancel" />
+    </actionGroup>
+    <actionGroup id="ag7" scope="ActionBar" headerText="Report">
+      <action id="a1" commandName="ReportAsPdf" />
+      <action id="a2" commandName="ReportAsImage" />
+      <action id="a3" commandName="ReportAsExcel" />
+      <action id="a4" commandName="ReportAsWord" />
+    </actionGroup>
+    <actionGroup id="ag8" scope="Row">
+      <action id="a4" whenLastCommandName="Edit" commandName="Update" />
+      <action id="a5" whenLastCommandName="Edit" commandName="Cancel" />
+      <action id="a6" whenLastCommandName="New" commandName="Insert" />
+      <action id="a7" whenLastCommandName="New" commandName="Cancel" />
+    </actionGroup>
+  </actions>
+  <businessRules>
+    <rule id="r100" commandName="New" type="Sql" phase="Execute"><![CDATA[SET @Created = GETDATE()]]></rule>
+    <rule id="r101" commandName="New" type="JavaScript" phase="After"><![CDATA[var d = new Date();
+
+if (d.getMinutes() <30)
+    d.setMinutes(30, 0, 0);
+else
+    d.setMinutes(60, 0, 0);
+
+$row.Date = d;
+]]></rule>
+    <rule id="r102" commandName="Custom" commandArgument="CompleteTask" type="Sql" phase="Execute"><![CDATA[UPDATE Tasks
+
+SET Completed = GETDATE(), "Status" = 'Completed'
+
+WHERE TaskID = @TaskID]]></rule>
+    <rule id="r103" commandName="Insert" type="Sql" phase="Before"><![CDATA[SET @Creator = @BusinessRules_UserName
+
+SET @Status = 'New'
+
+IF (@Owner IS NULL)
+
+SET @Owner = @BusinessRules_UserName
+
+ELSE
+	SET @Status = 'Delegated']]></rule>
+  </businessRules>
+</dataController>

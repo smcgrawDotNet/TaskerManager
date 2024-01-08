@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<dataModel baseSchema="dbo" baseTable="Expenses" alias="Expenses" created="2024-01-01T14:55:11" modified="2024-01-01T15:03:20" x="20" y="20" xmlns="urn:schemas-codeontime-com:data-model">
+  <foreignKeys>
+    <foreignKey id="Task" parentTableSchema="dbo" parentTableName="Tasks" x="290" y="20">
+      <foreignKeyColumn columnName="TaskID" parentColumnName="TaskID" />
+    </foreignKey>
+  </foreignKeys>
+  <columns>
+    <column name="ExpenseID" fieldName="ExpenseID" label="Expense ID" />
+    <column name="Item" fieldName="Item" label="Item" />
+    <column name="Price" fieldName="Price" label="Price" format="c" />
+    <column fieldName="TotalPrice" type="money" dataType="Decimal" label="Total Price" format="c">
+      <formula>Expenses.Price * Expenses.Quantity</formula>
+    </column>
+    <column name="Quantity" fieldName="Quantity" label="Quantity" />
+    <column name="TaskID" fieldName="TaskID" label="Task ID" aliasColumnName="Description" aliasForeignKey="Task" />
+    <column name="Description" fieldName="TaskDescription" label="Task Description" foreignKey="Task" />
+  </columns>
+</dataModel>

@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<dataModel baseSchema="dbo" baseTable="Tasks" alias="Tasks" created="2023-12-29T15:11:33" modified="2024-01-03T10:03:29" x="20" y="20" xmlns="urn:schemas-codeontime-com:data-model">
+  <foreignKeys>
+    <foreignKey id="Location" parentTableSchema="dbo" parentTableName="Locations" x="390" y="132">
+      <foreignKeyColumn columnName="LocationID" parentColumnName="LocationID" />
+    </foreignKey>
+  </foreignKeys>
+  <columns>
+    <column name="TaskID" fieldName="TaskID" label="Task ID" />
+    <column name="Description" fieldName="Description" label="Description" />
+    <column name="Date" fieldName="Date" label="Date" format="g" sortType="Descending" sortOrder="1" />
+    <column name="Created" fieldName="Created" label="Created" format="g" />
+    <column name="Completed" fieldName="Completed" label="Completed" format="g" />
+    <column name="CategoryID" fieldName="CategoryID" label="Category ID" />
+    <column name="State" fieldName="State" label="State" foreignKey="Location" />
+    <column name="PostalCode" fieldName="PostalCode" label="Postal Code" foreignKey="Location" />
+    <column name="Country" fieldName="Country" label="Country" foreignKey="Location" />
+    <column name="Address" fieldName="Address" label="Address" foreignKey="Location" />
+    <column name="Name" fieldName="LocationName" label="Location Name" foreignKey="Location" />
+    <column name="City" fieldName="City" label="City" foreignKey="Location" />
+    <column name="LocationID" fieldName="LocationID" label="Location ID" aliasColumnName="Name" aliasForeignKey="Location" />
+    <column name="Creator" fieldName="Creator" label="Creator" />
+    <column name="Owner" fieldName="Owner" label="Owner" />
+    <column name="Status" fieldName="Status" label="Status" sortType="Ascending" sortOrder="2" />
+  </columns>
+</dataModel>
